@@ -1,4 +1,7 @@
 .idea
+.phplint.yml
+.phplint-cache
+
 ###> symfony/framework-bundle ###
 /.env
 /public/bundles/

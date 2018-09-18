@@ -15,8 +15,6 @@ services:
         version: "7.2"
         config:
             server: nginx.conf
-        composer:
-            phpunit/phpunit: '*'
     # Add a phpmyadmin db frontend
     pma:
 
@@ -58,12 +56,25 @@ services:
 tooling:
     sf:
         service: appserver
-        description: Run Symfony commands
+        description: "Run Symfony commands: lando sf [command]"
         cmd:
             - bin/console
     phpunit:
         service: appserver
-        description: "Run PHP Unit tests: lando phpunit"
+        description: "Run PHP Unit tests: lando phpunit [options]"
+        cmd:
+            - bin/phpunit --colors=always --coverage-html=build/phpunit/coverage
+    phplint:
+        service: appserver
+        description: "Run PHP lint: lando phplint [options]"
+        cmd:
+            - vendor/bin/phplint -vvv --no-cache --configuration=./.phplint.yml
+    phpmetrics:
+        service: appserver
+        description: "Run PHP metrics: lando phpmetrics [options]"
+        cmd:
+            - vendor/bin/phpmetrics --report-html=build/phpmetrics src/
 events:
     post-start:
-        - appserver: "composer install --working-dir=$LANDO_MOUNT"
+        - appserver: "bin/console doctrine:migration:migrate --no-interaction"
+        - appserver: "bin/console doctrine:schema:validate"
