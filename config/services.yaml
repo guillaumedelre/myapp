@@ -29,3 +29,37 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Command\AuthRegisterCommand:
+        $appUsername: '%env(MYAPP_USERNAME)%'
+        $appPassword: '%env(MYAPP_PASSWORD)%'
+
+    App\Command\AuthTokenCommand:
+        $appUsername: '%env(MYAPP_USERNAME)%'
+        $appPassword: '%env(MYAPP_PASSWORD)%'
+
+    App\Redis\RedisWrapper:
+        $redisClient: '@snc_redis.default'
+
+    App\Api\Authentication\InternalClient:
+        $httpClient: '@csa_guzzle.client.internal_authentication_api'
+        $jsonEncoder: '@serializer.encoder.json'
+
+    App\Api\Authentication\UnsecuredClient:
+        $httpClient: '@csa_guzzle.client.unsecured_authentication_api'
+
+    App\Handler\LoginHandler:
+        $jsonEncoder: '@serializer.encoder.json'
+
+    App\Security\WebServiceUserProvider: ~
+
+    App\GuzzleHttp\Middleware\InternalMiddleware:
+        arguments:
+            $appUsername: '%env(MYAPP_USERNAME)%'
+            $appPassword: '%env(MYAPP_PASSWORD)%'
+        tags:
+            - { name: 'csa_guzzle.middleware', alias: 'internal' }
+
+    App\GuzzleHttp\Middleware\JwtMiddleware:
+        tags:
+            - { name: 'csa_guzzle.middleware', alias: 'jwt' }

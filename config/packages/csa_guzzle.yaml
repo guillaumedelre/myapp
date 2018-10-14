@@ -1,0 +1,36 @@
+# Full configuration reference: https://github.com/csarrazi/CsaGuzzleBundle/blob/2.x/src/Resources/doc/configuration_reference.md#configuration-reference
+# Available client config options: http://docs.guzzlephp.org/en/latest/quickstart.html#creating-a-client
+# and http://docs.guzzlephp.org/en/latest/request-options.html
+csa_guzzle:
+    profiler:
+        enabled: '%kernel.debug%'
+    logger:
+        enabled: '%kernel.debug%'
+    clients:
+        unsecured_authentication_api:
+            config:
+                base_uri: 'https://%env(SERVICE_AUTHENTICATION_BASEURI)%'
+                timeout: 2.0
+                verfify: true
+                headers:
+                    Accept: application/json
+                    Content-Type: application/json
+            middleware: ['debug', 'stopwatch', 'logger']
+        secured_authentication_api:
+            config:
+                base_uri: 'https://%env(SERVICE_AUTHENTICATION_BASEURI)%'
+                timeout: 2.0
+                verfify: false
+                headers:
+                    Accept: application/ld+json
+                    Content-Type: application/json
+            middleware: ['debug', 'stopwatch', 'logger', 'jwt']
+        internal_authentication_api:
+            config:
+                base_uri: 'https://%env(SERVICE_AUTHENTICATION_BASEURI)%'
+                timeout: 2.0
+                verfify: false
+                headers:
+                    Accept: application/ld+json
+                    Content-Type: application/json
+            middleware: ['debug', 'stopwatch', 'logger', 'internal']
