@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Handler\LoginHandler;
 use App\Handler\RegisterHandler;
 use App\Redis\RedisWrapper;
+use App\Security\InternalRefreshToken;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,42 +19,19 @@ class AuthTokenCommand extends Command
     protected static $defaultName = 'app:auth:token';
 
     /**
-     * @var LoginHandler
+     * @var InternalRefreshToken
      */
-    private $loginHandler;
-
-    /**
-     * @var RedisWrapper
-     */
-    private $redisWrapper;
-
-    /**
-     * @var array
-     */
-    private $credentials;
+    private $internalRefreshToken;
 
     /**
      * RegisterCommand constructor.
      *
-     * @param LoginHandler    $loginHandler
-     * @param RedisWrapper    $redisWrapper
-     * @param string          $appUsername
-     * @param string          $appPassword
+     * @param InternalRefreshToken $internalRefreshToken
      */
-    public function __construct(
-        LoginHandler $loginHandler,
-        RedisWrapper $redisWrapper,
-        string $appUsername,
-        string $appPassword
-    ) {
+    public function __construct(InternalRefreshToken $internalRefreshToken) {
         parent::__construct(self::$defaultName);
 
-        $this->loginHandler = $loginHandler;
-        $this->redisWrapper = $redisWrapper;
-        $this->credentials = [
-            'username' => $appUsername,
-            'password' => $appPassword,
-        ];
+        $this->internalRefreshToken = $internalRefreshToken;
     }
 
     protected function configure()
@@ -67,11 +45,10 @@ class AuthTokenCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $data = $this->loginHandler->handle($this->credentials);
-            $this->redisWrapper->setAppToken($data['token']);
-            $io->success("Application {$this->credentials['username']} received its access token.");
+            $this->internalRefreshToken->refresh();
+            $io->success("Application {$this->internalRefreshToken->getCredentials()['username']} received its access token.");
         } catch (UnauthorizedHttpException $e) {
-            $io->error("Application {$this->credentials['username']} not found.");
+            $io->error("Application {$this->internalRefreshToken->getCredentials()['username']} not found.");
             return 1;
         }
 

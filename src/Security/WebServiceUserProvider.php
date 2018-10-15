@@ -10,10 +10,15 @@ namespace App\Security;
 
 
 use App\Api\Authentication\InternalClient;
+use GuzzleHttp\Exception\ClientException;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationExpiredException;
+use Symfony\Component\Security\Core\Exception\TokenNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 class WebServiceUserProvider implements UserProviderInterface
 {
@@ -23,13 +28,20 @@ class WebServiceUserProvider implements UserProviderInterface
     private $internalClient;
 
     /**
-     * WebserviceUserProvider constructor.
+     * @var JsonEncoder
+     */
+    private $jsonEncoder;
+
+    /**
+     * WebServiceUserProvider constructor.
      *
      * @param InternalClient $internalClient
+     * @param JsonEncoder    $jsonEncoder
      */
-    public function __construct(InternalClient $internalClient)
+    public function __construct(InternalClient $internalClient, JsonEncoder $jsonEncoder)
     {
         $this->internalClient = $internalClient;
+        $this->jsonEncoder = $jsonEncoder;
     }
 
     public function loadUserByUsername($username)
@@ -58,15 +70,21 @@ class WebServiceUserProvider implements UserProviderInterface
     private function fetchUser($username)
     {
         // make a call to your webservice here
-        $userData = $this->internalClient->findUsersByUsername($username);
-        // pretend it returns an array on success, false if there is no user
+        $response = $this->internalClient->findUsersByUsername($username);
+        $responseData = $this->jsonEncoder->decode($response->getBody()->getContents(), JsonEncoder::FORMAT);
 
-        if ($userData) {
-            return new WebServiceUser($userData['username'], '', '', []);
+        if ($response->getStatusCode() === 498) {
+            throw new UsernameNotFoundException(
+                $responseData['message']
+            );
         }
 
-        throw new UsernameNotFoundException(
-            sprintf('Username "%s" does not exist.', $username)
-        );
+        if (1 !== $responseData['hydra:totalItems']) {
+            throw new UsernameNotFoundException(
+                sprintf('Username "%s" does not exist.', $username)
+            );
+        }
+
+        return new WebServiceUser(current($responseData['hydra:member'])['username'], '', '', []);
     }
 }

@@ -34,10 +34,6 @@ services:
         $appUsername: '%env(MYAPP_USERNAME)%'
         $appPassword: '%env(MYAPP_PASSWORD)%'
 
-    App\Command\AuthTokenCommand:
-        $appUsername: '%env(MYAPP_USERNAME)%'
-        $appPassword: '%env(MYAPP_PASSWORD)%'
-
     App\Redis\RedisWrapper:
         $redisClient: '@snc_redis.default'
 
@@ -51,12 +47,15 @@ services:
     App\Handler\LoginHandler:
         $jsonEncoder: '@serializer.encoder.json'
 
-    App\Security\WebServiceUserProvider: ~
+    App\Security\WebServiceUserProvider:
+        $jsonEncoder: '@serializer.encoder.json'
 
-    App\GuzzleHttp\Middleware\InternalMiddleware:
+    App\Security\InternalRefreshToken:
         arguments:
             $appUsername: '%env(MYAPP_USERNAME)%'
             $appPassword: '%env(MYAPP_PASSWORD)%'
+
+    App\GuzzleHttp\Middleware\InternalMiddleware:
         tags:
             - { name: 'csa_guzzle.middleware', alias: 'internal' }
 

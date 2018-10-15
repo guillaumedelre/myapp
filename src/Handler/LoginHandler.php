@@ -52,7 +52,7 @@ class LoginHandler
         if (Response::HTTP_OK !== $response->getStatusCode()) {
             throw new UnauthorizedHttpException('', $response->getReasonPhrase());
         }
-
+        $response->getBody()->rewind();
         return $this->jsonEncoder->decode($response->getBody()->getContents(), JsonEncoder::FORMAT);
     }
 }

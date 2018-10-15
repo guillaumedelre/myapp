@@ -11,46 +11,32 @@ namespace App\GuzzleHttp\Middleware;
 use App\Domain\Http\Request\Headers;
 use App\Handler\LoginHandler;
 use App\Redis\RedisWrapper;
+use App\Security\InternalRefreshToken;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class InternalMiddleware
 {
     /**
+     * @var InternalRefreshToken
+     */
+    private $internalRefreshToken;
+
+    /**
      * @var RedisWrapper
      */
     private $redisWrapper;
 
     /**
-     * @var LoginHandler
-     */
-    private $loginHandler;
-
-    /**
-     * @var array
-     */
-    private $credentials;
-
-    /**
      * InternalMiddleware constructor.
      *
-     * @param RedisWrapper $redisWrapper
-     * @param LoginHandler $loginHandler
-     * @param string       $appUsername
-     * @param string       $appPassword
+     * @param InternalRefreshToken $internalRefreshToken
+     * @param RedisWrapper         $redisWrapper
      */
-    public function __construct(
-        RedisWrapper $redisWrapper,
-        LoginHandler $loginHandler,
-        string $appUsername,
-        string $appPassword
-    ) {
+    public function __construct(InternalRefreshToken $internalRefreshToken, RedisWrapper $redisWrapper)
+    {
+        $this->internalRefreshToken = $internalRefreshToken;
         $this->redisWrapper = $redisWrapper;
-        $this->loginHandler = $loginHandler;
-        $this->credentials = [
-            'username' => $appUsername,
-            'password' => $appPassword,
-        ];
     }
 
     /**
@@ -75,9 +61,9 @@ class InternalMiddleware
             return "Bearer $token";
         }
 
-        $data = $this->loginHandler->handle($this->credentials);
+        $data = $this->internalRefreshToken->refresh();
         if (empty($data)) {
-            throw new UnauthorizedHttpException('', "Application {$this->credentials['username']} not found.");
+            throw new UnauthorizedHttpException('', "Application not found.");
         }
 
         return "Bearer {$data['token']}";
