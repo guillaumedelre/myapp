@@ -4,7 +4,7 @@ namespace App;
 
 use App\Domain\GuzzleHttp\Client\ClientConfigDTO;
 use App\GuzzleHttp\ClientConfigStore;
-use App\Redis\RedisWrapper;
+use App\Redis\JwtStorage;
 use Csa\Bundle\GuzzleBundle\DependencyInjection\CompilerPass\MiddlewarePass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;

@@ -12,10 +12,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DefaultController extends AbstractController
+class RoleController extends AbstractController
 {
     /**
-     * @Route(name="default_index", path="/")
+     * @Route(name="role_index", path="/roles")
      *
      * @return Response
      */

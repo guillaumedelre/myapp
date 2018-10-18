@@ -11,6 +11,6 @@ namespace App\Domain\Redis;
 
 class Keys
 {
-    const APP_TOKEN = 'myapp:security:app:token';
     const USER_TOKEN = 'myapp:security:user:token';
+    const USER_REFRESH_TOKEN = 'myapp:security:user:refresh_token';
 }

@@ -1,11 +1,2 @@
-default_index:
-    path: /
-    controller: App\Controller\DefaultController::index
-
-login_index:
-    path: /login
-    controller: App\Controller\LoginController::index
-
-register_index:
-    path: /register
-    controller: App\Controller\RegisterController::index
+logout_index:
+    path: /logout

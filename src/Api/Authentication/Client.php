@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: gdelre
- * Date: 14/10/18
- * Time: 15:04
+ * Date: 16/10/18
+ * Time: 09:01
  */
 
 namespace App\Api\Authentication;
@@ -11,7 +11,7 @@ namespace App\Api\Authentication;
 use GuzzleHttp as GuzzleHttp;
 use Psr\Http\Message\ResponseInterface;
 
-class UnsecuredClient
+class Client
 {
     /**
      * @var GuzzleHttp\Client
@@ -39,9 +39,18 @@ class UnsecuredClient
             '/register',
             [
                 GuzzleHttp\RequestOptions::FORM_PARAMS => $data,
-                GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
             ]
         );
+    }
+
+    /**
+     * @param string $refreshToken
+     *
+     * @return ResponseInterface
+     */
+    public function refresh(string $refreshToken): ResponseInterface
+    {
+        return $this->httpClient->get("/refresh/$refreshToken");
     }
 
     /**
@@ -54,8 +63,22 @@ class UnsecuredClient
         return $this->httpClient->post(
             '/token',
             [
-                GuzzleHttp\RequestOptions::JSON        => $data,
-                GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
+                GuzzleHttp\RequestOptions::JSON => $data,
+            ]
+        );
+    }
+
+    /**
+     * @param string $username
+     *
+     * @return ResponseInterface
+     */
+    public function findUsersByUsername(string $username): ResponseInterface
+    {
+        return $this->httpClient->get(
+            '/api/users',
+            [
+                GuzzleHttp\RequestOptions::QUERY => ['username' => $username],
             ]
         );
     }

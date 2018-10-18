@@ -14,12 +14,35 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class WebServiceUser implements UserInterface, EquatableInterface
 {
+    /**
+     * @var string
+     */
     private $username;
+
+    /**
+     * @var string
+     */
     private $password;
+
+    /**
+     * @var string
+     */
     private $salt;
+
+    /**
+     * @var array
+     */
     private $roles;
 
-    public function __construct($username, $password, $salt, array $roles)
+    /**
+     * WebServiceUser constructor.
+     *
+     * @param string $username
+     * @param string $password
+     * @param string $salt
+     * @param array  $roles
+     */
+    public function __construct(string $username, string $password, string $salt, array $roles)
     {
         $this->username = $username;
         $this->password = $password;
@@ -27,22 +50,34 @@ class WebServiceUser implements UserInterface, EquatableInterface
         $this->roles = $roles;
     }
 
-    public function getRoles()
+    /**
+     * @return array
+     */
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
-    public function getPassword()
+    /**
+     * @return string
+     */
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function getSalt()
+    /**
+     * @return null|string
+     */
+    public function getSalt(): ?string
     {
         return $this->salt;
     }
 
-    public function getUsername()
+    /**
+     * @return string
+     */
+    public function getUsername(): string
     {
         return $this->username;
     }
@@ -51,7 +86,12 @@ class WebServiceUser implements UserInterface, EquatableInterface
     {
     }
 
-    public function isEqualTo(UserInterface $user)
+    /**
+     * @param UserInterface $user
+     *
+     * @return bool
+     */
+    public function isEqualTo(UserInterface $user): bool
     {
         if (!$user instanceof WebServiceUser) {
             return false;

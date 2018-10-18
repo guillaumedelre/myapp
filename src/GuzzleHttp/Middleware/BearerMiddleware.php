@@ -8,36 +8,34 @@
 
 namespace App\GuzzleHttp\Middleware;
 
+use App\Api\Authentication\ClientHandler;
 use App\Domain\Http\Request\Headers;
-use App\Handler\LoginHandler;
-use App\Redis\RedisWrapper;
+use App\Redis\JwtStorage;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class JwtMiddleware
+class BearerMiddleware
 {
     /**
-     * @var RedisWrapper
+     * @var JwtStorage
      */
-    private $redisWrapper;
+    private $jwtStorage;
 
     /**
-     * @var LoginHandler
+     * @var ClientHandler
      */
-    private $loginHandler;
+    private $clientHandler;
 
     /**
-     * InternalMiddleware constructor.
+     * BearerMiddleware constructor.
      *
-     * @param RedisWrapper $redisWrapper
-     * @param LoginHandler $loginHandler
+     * @param JwtStorage    $jwtStorage
+     * @param ClientHandler $clientHandler
      */
-    public function __construct(
-        RedisWrapper $redisWrapper,
-        LoginHandler $loginHandler
-    ) {
-        $this->redisWrapper = $redisWrapper;
-        $this->loginHandler = $loginHandler;
+    public function __construct(JwtStorage $jwtStorage, ClientHandler $clientHandler)
+    {
+        $this->jwtStorage = $jwtStorage;
+        $this->clientHandler = $clientHandler;
     }
 
     /**
@@ -55,13 +53,16 @@ class JwtMiddleware
         };
     }
 
-    private function getAuthorization()
+    /**
+     * @return string
+     */
+    private function getAuthorization(): string
     {
-        $token = $this->redisWrapper->getUserToken();
-        if (!empty($token)) {
-            return "Bearer $token";
+        $bearer = "Bearer";
+        if (false === ($token = $this->jwtStorage->getUserToken())) {
+            return $bearer;
         }
 
-        throw new UnauthorizedHttpException('', "You must login again.");
+        return "$bearer $token";
     }
 }

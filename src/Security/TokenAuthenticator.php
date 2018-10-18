@@ -9,12 +9,14 @@
 namespace App\Security;
 
 use App\Domain\Http\Request\Headers;
-use App\Redis\RedisWrapper;
+use App\Redis\JwtStorage;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -24,18 +26,25 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 class TokenAuthenticator extends AbstractGuardAuthenticator
 {
     /**
-     * @var RedisWrapper
+     * @var JwtStorage
      */
-    private $redisWrapper;
+    private $jwtStorage;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
 
     /**
      * TokenAuthenticator constructor.
      *
-     * @param RedisWrapper $redisWrapper
+     * @param JwtStorage      $jwtStorage
+     * @param RouterInterface $router
      */
-    public function __construct(RedisWrapper $redisWrapper)
+    public function __construct(JwtStorage $jwtStorage, RouterInterface $router)
     {
-        $this->redisWrapper = $redisWrapper;
+        $this->jwtStorage = $jwtStorage;
+        $this->router = $router;
     }
 
     /**
@@ -45,7 +54,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function supports(Request $request)
     {
-        return !empty($this->redisWrapper->getUserToken());
+        return !empty($this->jwtStorage->getUserToken());
     }
 
     /**
@@ -55,7 +64,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function getCredentials(Request $request)
     {
         return array(
-            'token' => $this->redisWrapper->getUserToken(),
+            'token' => $this->jwtStorage->getUserToken(),
         );
     }
 
@@ -64,7 +73,10 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         /** @var Token $token */
         $token = (new Parser())->parse($credentials['token'] ?? '');
 
-        // if a User object, checkCredentials() is called
+        if (empty($token->getClaims()['username'])) {
+            return null;
+        }
+
         return $userProvider->loadUserByUsername($token->getClaims()['username']);
     }
 
@@ -100,12 +112,13 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        $data = array(
-            // you might translate this message
-            'message' => 'Authentication Required'
-        );
-
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+//        $data = array(
+//            // you might translate this message
+//            'message' => 'Authentication Required'
+//        );
+//
+//        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        return new RedirectResponse($this->router->generate('login_index'));
     }
 
     public function supportsRememberMe()

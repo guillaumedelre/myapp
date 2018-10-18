@@ -6,7 +6,7 @@
             <ul class="header-nav header-nav-options">
                 <li class="header-nav-brand">
                     <div class="brand-holder">
-                        <a href="../../html/dashboards/dashboard.html">
+                        <a href="{{ url('default_index') }}">
                             <span class="text-lg text-bold text-primary">{{ APP_BASE_TITLE }}</span>
                         </a>
                     </div>
@@ -111,8 +111,8 @@
                     <a href="javascript:void(0);" class="dropdown-toggle ink-reaction" data-toggle="dropdown">
                         <img src="../../assets/img/avatar1.jpg?1403934956" alt=""/>
                         <span class="profile-info">
-                                                    Daniel Johnson
-                                                    <small>Administrator</small>
+                                                    {{ tokenUsername()|capitalize }}
+                                                    <small>{{ tokenRoles()|capitalize }}</small>
                                                 </span>
                     </a>
                     <ul class="dropdown-menu animation-dock">
@@ -124,7 +124,7 @@
                         <li class="divider"></li>
                         <li><a href="../../html/pages/locked.html"><i class="fa fa-fw fa-lock"></i> Lock</a>
                         </li>
-                        <li><a href="../../html/pages/login.html"><i
+                        <li><a href="{{ url('logout_index') }}"><i
                                         class="fa fa-fw fa-power-off text-danger"></i> Logout</a></li>
                     </ul><!--end .dropdown-menu -->
                 </li><!--end .dropdown -->

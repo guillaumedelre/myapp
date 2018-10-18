@@ -30,35 +30,15 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Command\AuthRegisterCommand:
-        $appUsername: '%env(MYAPP_USERNAME)%'
-        $appPassword: '%env(MYAPP_PASSWORD)%'
+    App\Api\Authentication\Client:
+        $httpClient: '@csa_guzzle.client.authentication'
 
-    App\Redis\RedisWrapper:
+    App\Api\Authentication\ClientHandler:
+        $jsonEncoder: '@serializer.encoder.json'
+
+    App\GuzzleHttp\Middleware\BearerMiddleware:
+        tags:
+            - { name: 'csa_guzzle.middleware', alias: 'bearer' }
+
+    App\Redis\JwtStorage:
         $redisClient: '@snc_redis.default'
-
-    App\Api\Authentication\InternalClient:
-        $httpClient: '@csa_guzzle.client.internal_authentication_api'
-        $jsonEncoder: '@serializer.encoder.json'
-
-    App\Api\Authentication\UnsecuredClient:
-        $httpClient: '@csa_guzzle.client.unsecured_authentication_api'
-
-    App\Handler\LoginHandler:
-        $jsonEncoder: '@serializer.encoder.json'
-
-    App\Security\WebServiceUserProvider:
-        $jsonEncoder: '@serializer.encoder.json'
-
-    App\Security\InternalRefreshToken:
-        arguments:
-            $appUsername: '%env(MYAPP_USERNAME)%'
-            $appPassword: '%env(MYAPP_PASSWORD)%'
-
-    App\GuzzleHttp\Middleware\InternalMiddleware:
-        tags:
-            - { name: 'csa_guzzle.middleware', alias: 'internal' }
-
-    App\GuzzleHttp\Middleware\JwtMiddleware:
-        tags:
-            - { name: 'csa_guzzle.middleware', alias: 'jwt' }

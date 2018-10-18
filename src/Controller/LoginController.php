@@ -8,9 +8,7 @@
 
 namespace App\Controller;
 
-
-use App\Handler\LoginHandler;
-use App\Redis\RedisWrapper;
+use App\Api\Authentication\ClientHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,18 +18,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class LoginController extends AbstractController
 {
     /**
-     * @Route("login_index")
+     * @Route(name="login_index", path="/login")
+     *
      * @return Response
      */
-    public function index(Request $request, RedisWrapper $redisWrapper, LoginHandler $loginHandler)
+    public function index(Request $request, ClientHandler $clientHandler)
     {
         $data = [];
 
         if (Request::METHOD_POST === $request->getMethod()) {
             try {
                 $route = 'default_index';
-                $data = $loginHandler->handle($request->request->all());
-                $redisWrapper->setUserToken($data['token']);
+                $clientHandler->login($request->request->all());
 
             } catch (UnauthorizedHttpException $e) {
                 $route = 'login_index';

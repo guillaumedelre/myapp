@@ -8,8 +8,7 @@
 
 namespace App\Controller;
 
-
-use App\Handler\RegisterHandler;
+use App\Api\Authentication\ClientHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,17 +19,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class RegisterController extends AbstractController
 {
     /**
-     * @Route("register_index")
+     * @Route(name="register_index", path="/register")
+     *
      * @return Response
      */
-    public function index(Request $request, RegisterHandler $registerHandler)
+    public function index(Request $request, ClientHandler $clientHandler)
     {
         $data = [];
 
         if (Request::METHOD_POST === $request->getMethod()) {
             $route = 'login_index';
             try {
-                $registerHandler->handle($request->request->all());
+                $clientHandler->register($request->request->all());
             } catch (ConflictHttpException $e) {
                 $route = 'register_index';
                 $this->addFlash('error', 'The username already in use, please choose another one.');
@@ -43,4 +43,5 @@ class RegisterController extends AbstractController
 
         return $this->render('layouts/register.html.twig', $data);
     }
+
 }

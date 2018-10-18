@@ -11,7 +11,9 @@ security:
 
         main:
             anonymous: ~
-            logout: ~
+            logout:
+                path: logout_index
+                success_handler: App\Security\LogoutSuccessHandler
             guard:
                 authenticators:
                     - App\Security\TokenAuthenticator
@@ -29,4 +31,5 @@ security:
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/logout, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

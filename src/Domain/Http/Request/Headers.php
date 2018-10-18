@@ -15,5 +15,5 @@ class Headers
     const ACCEPT = 'Accept';
     const CONTENT_TYPE = 'Content-Type';
 
-    const X_BEARER = 'X-Bearer';
+    const X_REFRESH_TOKEN = 'X-Refresh-Token';
 }

@@ -12,10 +12,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DefaultController extends AbstractController
+class ApplicationController extends AbstractController
 {
     /**
-     * @Route(name="default_index", path="/")
+     * @Route(name="application_index", path="/applications")
      *
      * @return Response
      */

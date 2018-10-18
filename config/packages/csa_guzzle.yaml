@@ -7,30 +7,11 @@ csa_guzzle:
     logger:
         enabled: '%kernel.debug%'
     clients:
-        unsecured_authentication_api:
+        authentication:
             config:
                 base_uri: 'https://%env(SERVICE_AUTHENTICATION_BASEURI)%'
                 timeout: 2.0
                 verfify: true
                 headers:
-                    Accept: application/json
-                    Content-Type: application/json
-            middleware: ['debug', 'stopwatch', 'logger']
-        secured_authentication_api:
-            config:
-                base_uri: 'https://%env(SERVICE_AUTHENTICATION_BASEURI)%'
-                timeout: 2.0
-                verfify: false
-                headers:
                     Accept: application/ld+json
-                    Content-Type: application/json
-            middleware: ['debug', 'stopwatch', 'logger', 'jwt']
-        internal_authentication_api:
-            config:
-                base_uri: 'https://%env(SERVICE_AUTHENTICATION_BASEURI)%'
-                timeout: 2.0
-                verfify: false
-                headers:
-                    Accept: application/ld+json
-                    Content-Type: application/json
-            middleware: ['debug', 'stopwatch', 'logger', 'internal']
+            middleware: ['debug', 'stopwatch', 'logger', 'bearer']

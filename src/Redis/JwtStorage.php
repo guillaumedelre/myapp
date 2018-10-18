@@ -11,7 +11,7 @@ namespace App\Redis;
 use App\Domain\Redis\Keys;
 use Snc\RedisBundle\Client\Phpredis as Phpredis;
 
-class RedisWrapper
+class JwtStorage
 {
     /**
      * @var Phpredis\Client
@@ -36,6 +36,13 @@ class RedisWrapper
         $this->redisClient->set(Keys::USER_TOKEN, $bearer);
     }
 
+    /**
+     * @param string $bearer
+     */
+    public function setUserRefreshToken(string $bearer)
+    {
+        $this->redisClient->set(Keys::USER_REFRESH_TOKEN, $bearer);
+    }
 
     /**
      * @return bool|mixed|string
@@ -46,18 +53,26 @@ class RedisWrapper
     }
 
     /**
-     * @param string $bearer
+     * @return bool|mixed|string
      */
-    public function setAppToken(string $bearer)
+    public function getUserRefreshToken()
     {
-        $this->redisClient->set(Keys::APP_TOKEN, $bearer);
+        return $this->redisClient->get(Keys::USER_REFRESH_TOKEN);
     }
 
     /**
-     * @return bool|mixed|string
+     * @return int|mixed
      */
-    public function getAppToken()
+    public function removeUserToken()
     {
-        return $this->redisClient->get(Keys::APP_TOKEN);
+        return $this->redisClient->del(Keys::USER_TOKEN);
+    }
+
+    /**
+     * @return int|mixed
+     */
+    public function removeUserRefreshToken()
+    {
+        return $this->redisClient->del(Keys::USER_REFRESH_TOKEN);
     }
 }
