@@ -1,0 +1,97 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ parent() }} - Blank page{% endblock %}
+
+{% block stylesheets %}
+    <!-- BEGIN STYLESHEETS -->
+    <link href='//fonts.googleapis.com/css?family=Roboto:300italic,400italic,300,400,500,700,900' rel='stylesheet' type='text/css'/>
+    <link type="text/css" rel="stylesheet" href="../../assets/css/theme-default/bootstrap.css?1422792965" />
+    <link type="text/css" rel="stylesheet" href="../../assets/css/theme-default/materialadmin.css?1425466319" />
+    <link type="text/css" rel="stylesheet" href="../../assets/css/theme-default/font-awesome.min.css?1422529194" />
+    <link type="text/css" rel="stylesheet" href="../../assets/css/theme-default/material-design-iconic-font.min.css?1421434286" />
+    <link type="text/css" rel="stylesheet" href="../../assets/css/theme-default/libs/DataTables/jquery.dataTables.css?1423553989" />
+    <link type="text/css" rel="stylesheet" href="../../assets/css/theme-default/libs/DataTables/extensions/dataTables.colVis.css?1423553990" />
+    <link type="text/css" rel="stylesheet" href="../../assets/css/theme-default/libs/DataTables/extensions/dataTables.tableTools.css?1423553990" />
+    <!-- END STYLESHEETS -->
+{% endblock %}
+
+{% block body %}
+    {% include "common/header.html.twig" %}
+
+    {% block base %}
+<!-- BEGIN BASE-->
+<div id="base">
+
+    {% include "common/canvas-left.html.twig" %}
+
+    <div id="content">
+        <section class="style-default-bright">
+
+            <div class="section-header">
+                <h2 class="text-primary">{{ entrypoint|capitalize }}</h2>
+            </div>
+
+            <div class="section-body">
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <article class="margin-bottom-xxl">
+                            <p class="lead">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            </p>
+                        </article>
+                    </div><!--end .col -->
+                    <div class="col-md-4 text-right">
+                        <a href="{{ url('crud_create' ,{'resource': resource}) }}" role="button" class="btn ink-reaction btn-floating-action btn-sm btn-primary"><i class="fa fa-plus"></i></a>
+                    </div><!--end .col -->
+                </div><!--end .row -->
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>List of all {{ entrypoint }}</h4>
+                    </div>
+                </div><!--end .col -->
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        {{ table(resource, data)|raw }}
+                    </div><!--end .col -->
+                </div><!--end .row -->
+
+            </div><!--end .section-body -->
+
+        </section>
+    </div><!--end #content-->
+    <!-- END CONTENT -->
+
+    {% include "common/menu.html.twig" %}
+
+    {% include "common/canvas-right.html.twig" %}
+
+</div><!--end #base-->
+<!-- END BASE -->
+{% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+    <!-- BEGIN JAVASCRIPT -->
+    <script src="../../assets/js/libs/jquery/jquery-1.11.2.min.js"></script>
+    <script src="../../assets/js/libs/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script src="../../assets/js/libs/bootstrap/bootstrap.min.js"></script>
+    <script src="../../assets/js/libs/spin.js/spin.min.js"></script>
+    <script src="../../assets/js/libs/autosize/jquery.autosize.min.js"></script>
+    <script src="../../assets/js/libs/DataTables/jquery.dataTables.min.js"></script>
+    <script src="../../assets/js/libs/DataTables/extensions/ColVis/js/dataTables.colVis.min.js"></script>
+    <script src="../../assets/js/libs/DataTables/extensions/TableTools/js/dataTables.tableTools.min.js"></script>
+    <script src="../../assets/js/libs/nanoscroller/jquery.nanoscroller.min.js"></script>
+    <script src="../../assets/js/core/source/App.js"></script>
+    <script src="../../assets/js/core/source/AppNavigation.js"></script>
+    <script src="../../assets/js/core/source/AppOffcanvas.js"></script>
+    <script src="../../assets/js/core/source/AppCard.js"></script>
+    <script src="../../assets/js/core/source/AppForm.js"></script>
+    <script src="../../assets/js/core/source/AppNavSearch.js"></script>
+    <script src="../../assets/js/core/source/AppVendor.js"></script>
+    <script src="../../assets/js/core/demo/Demo.js"></script>
+    <script src="../../assets/js/core/demo/DemoTableDynamic.js"></script>
+    <!-- END JAVASCRIPT -->
+{% endblock %}

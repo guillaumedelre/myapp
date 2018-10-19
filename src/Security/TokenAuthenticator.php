@@ -8,6 +8,7 @@
 
 namespace App\Security;
 
+use App\Api\Authentication\ClientHandler;
 use App\Domain\Http\Request\Headers;
 use App\Redis\JwtStorage;
 use Lcobucci\JWT\Parser;
@@ -36,15 +37,22 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     private $router;
 
     /**
+     * @var ClientHandler
+     */
+    private $clientHandler;
+
+    /**
      * TokenAuthenticator constructor.
      *
      * @param JwtStorage      $jwtStorage
      * @param RouterInterface $router
+     * @param ClientHandler $clientHandler
      */
-    public function __construct(JwtStorage $jwtStorage, RouterInterface $router)
+    public function __construct(JwtStorage $jwtStorage, RouterInterface $router, ClientHandler $clientHandler)
     {
         $this->jwtStorage = $jwtStorage;
         $this->router = $router;
+        $this->clientHandler = $clientHandler;
     }
 
     /**
@@ -91,6 +99,8 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        // fetch api docs to generate cruds ?
+        $this->clientHandler->doc();
         // on success, let the request continue
         return null;
     }

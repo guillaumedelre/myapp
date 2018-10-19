@@ -5,6 +5,17 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    crud:
+        Application:
+            list:
+                title: 'list.%%entity_label%%'
+                actions: ['new', 'show', 'edit', 'delete']
+                properties:
+
+        Permission:
+        Privilege:
+        Role:
+        User:
 
 services:
     # default configuration for services in *this* file
@@ -36,9 +47,24 @@ services:
     App\Api\Authentication\ClientHandler:
         $jsonEncoder: '@serializer.encoder.json'
 
+    App\Hydra\DocumentationExtractor:
+        $jsonEncoder: '@serializer.encoder.json'
+
     App\GuzzleHttp\Middleware\BearerMiddleware:
         tags:
             - { name: 'csa_guzzle.middleware', alias: 'bearer' }
 
     App\Redis\JwtStorage:
         $redisClient: '@snc_redis.default'
+
+    App\Redis\ApiDocStorage:
+        $redisClient: '@snc_redis.default'
+
+    App\Html\Renderer\:
+        resource: '../src/Html/Renderer/*'
+        calls:
+            - ['setTwigEngine', ['@templating']]
+
+    App\Html\HtmlGenerator:
+        calls:
+            - ['addHtmlRenderer', ['@App\Html\Renderer\TableResponsiveRenderer']]

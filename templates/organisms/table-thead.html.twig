@@ -1,0 +1,9 @@
+<thead>
+    <tr>
+        <th></th>
+        {% for itemProperty in table.itemProperties %}
+        <th class="{{ itemProperty.attrClass|e }}">{{ itemProperty.title|capitalize|e }}</th>
+        {% endfor %}
+        <th class="text-right">Actions</th>
+    </tr>
+</thead>

@@ -15,6 +15,7 @@
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "*",
         "symfony/monolog-bundle": "^3.3",
+        "symfony/templating": "*",
         "symfony/test-pack": "^1.0",
         "symfony/twig-bundle": "*",
         "symfony/yaml": "*"
@@ -22,6 +23,8 @@
     "require-dev": {
         "overtrue/phplint": "^1.1",
         "phpmetrics/phpmetrics": "^2.4",
+        "symfony/debug": "*",
+        "symfony/debug-pack": "^1.0",
         "symfony/maker-bundle": "^1.8",
         "symfony/profiler-pack": "^1.0",
         "symfony/var-dumper": "*"

@@ -29,6 +29,14 @@ class Client
     }
 
     /**
+     * @return ResponseInterface
+     */
+    public function doc(): ResponseInterface
+    {
+        return $this->httpClient->get('/api/docs');
+    }
+
+    /**
      * @param array $data
      *
      * @return ResponseInterface
@@ -79,6 +87,22 @@ class Client
             '/api/users',
             [
                 GuzzleHttp\RequestOptions::QUERY => ['username' => $username],
+            ]
+        );
+    }
+
+    /**
+     * @param string $resource
+     * @param array  $filters
+     *
+     * @return ResponseInterface
+     */
+    public function list(string $resource, array $filters = []): ResponseInterface
+    {
+        return $this->httpClient->get(
+            "/api/$resource",
+            [
+                GuzzleHttp\RequestOptions::QUERY => $filters,
             ]
         );
     }

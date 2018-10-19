@@ -39,7 +39,7 @@ class JwtExtension extends AbstractExtension
 
     public function tokenUsername()
     {
-        return $this->token->getClaim('username') ?? '';
+        return $this->token->getClaim('fullname') ?? $this->token->getClaim('username');
     }
 
     public function tokenRoles()

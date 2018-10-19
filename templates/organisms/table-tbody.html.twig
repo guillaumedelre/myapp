@@ -1,0 +1,33 @@
+<tbody>
+{% for item in items %}
+    <tr>
+        <td>
+            <label class="checkbox-inline checkbox-styled">
+                <input type="checkbox" value="{{ item['id'] }}">
+            </label>
+        </td>
+        {% for itemProperty in table.itemProperties %}
+            <td>
+                {% if itemProperty.type == 'boolean' %}
+                    {% if item[itemProperty.title] %}
+                        <label class="checkbox-inline checkbox-styled">
+                            <input type="checkbox" value="{{ item['id'] }}" checked="checked" disabled="disabled">
+                        </label>
+                    {% else %}
+                        <label class="checkbox-inline checkbox-styled">
+                            <input type="checkbox" value="{{ item['id'] }}" disabled="disabled">
+                        </label>
+                    {% endif %}
+                {% else %}
+                    {{ item[itemProperty.title]|e }}
+                {% endif %}
+            </td>
+        {% endfor %}
+        <td class="text-right">
+            <a href="{{ url('crud_show', {'resource': resource, 'id': item['id']}) }}" role="button" class="btn ink-reaction btn-sm btn-info"><i class="md-remove-red-eye"></i> show</a>
+            <a href="{{ url('crud_edit', {'resource': resource, 'id': item['id']}) }}" role="button" class="btn ink-reaction btn-sm btn-accent-light"><i class="md-mode-edit"></i> edit</a>
+            <a href="{{ url('crud_delete', {'resource': resource, 'id': item['id']}) }}" role="button" class="btn ink-reaction btn-sm btn-danger"><i class="md-delete"></i> delete</a>
+        </td>
+    </tr>
+{% endfor %}
+</tbody>

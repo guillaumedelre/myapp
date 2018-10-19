@@ -13,4 +13,6 @@ class Keys
 {
     const USER_TOKEN = 'myapp:security:user:token';
     const USER_REFRESH_TOKEN = 'myapp:security:user:refresh_token';
+
+    const API_DOC_AUTHENTICATION = 'myapp:api_doc:authentication';
 }

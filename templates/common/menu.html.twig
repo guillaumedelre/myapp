@@ -29,7 +29,7 @@
 
             <!-- BEGIN APPLICATION -->
             <li>
-                <a href="{{ url('application_index') }}">
+                <a href="{{ url('crud_index', {'resource': 'application'}) }}">
                     <div class="gui-icon"><i class="md md-dock"></i></div>
                     <span class="title">Applications</span>
                 </a>
@@ -38,7 +38,7 @@
 
             <!-- BEGIN PERMISSION -->
             <li>
-                <a href="{{ url('permission_index') }}">
+                <a href="{{ url('crud_index', {'resource': 'permission'}) }}">
                     <div class="gui-icon"><i class="md md-security"></i></div>
                     <span class="title">Permissions</span>
                 </a>
@@ -47,7 +47,7 @@
 
             <!-- BEGIN ROLE -->
             <li>
-                <a href="{{ url('role_index') }}">
+                <a href="{{ url('crud_index', {'resource': 'role'}) }}">
                     <div class="gui-icon"><i class="md md-person-outline"></i></div>
                     <span class="title">Roles</span>
                 </a>
@@ -56,7 +56,7 @@
 
             <!-- BEGIN USER -->
             <li>
-                <a href="{{ url('user_index') }}">
+                <a href="{{ url('crud_index', {'resource': 'user'}) }}">
                     <div class="gui-icon"><i class="md md-person"></i></div>
                     <span class="title">Users</span>
                 </a>
@@ -65,7 +65,7 @@
 
             <!-- BEGIN PRIVILEGE -->
             <li>
-                <a href="{{ url('privilege_index') }}">
+                <a href="{{ url('crud_index', {'resource': 'privilege'}) }}">
                     <div class="gui-icon"><i class="md md-lock-open"></i></div>
                     <span class="title">Privileges</span>
                 </a>

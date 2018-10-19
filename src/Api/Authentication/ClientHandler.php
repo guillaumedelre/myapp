@@ -9,9 +9,13 @@
 namespace App\Api\Authentication;
 
 
-use App\Domain\Http\Exception\RetryHttpException;
+use App\Domain\Api\ResourceEntrypoints;
+use App\Domain\Exception\InvalidResourceEndpointException;
+use App\Domain\Exception\RetryHttpException;
 use App\Domain\Http\Request\Headers;
+use App\Redis\ApiDocStorage;
 use App\Redis\JwtStorage;
+use Doctrine\Common\Inflector\Inflector;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TransferException;
 use Psr\Http\Message\ResponseInterface;
@@ -20,6 +24,17 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 class ClientHandler
 {
+    /**
+     * @var array
+     */
+    private static $resourceEntrypoints = [
+        ResourceEntrypoints::APPLICATION,
+        ResourceEntrypoints::PERMISSION,
+        ResourceEntrypoints::PRIVILEGE,
+        ResourceEntrypoints::ROLE,
+        ResourceEntrypoints::USER,
+    ];
+
     /**
      * @var array
      */
@@ -46,17 +61,41 @@ class ClientHandler
     private $jwtStorage;
 
     /**
+     * @var ApiDocStorage
+     */
+    private $apiDocStorage;
+
+    /**
      * RegisterHandler constructor.
      *
-     * @param Client      $apiClient
-     * @param JsonEncoder $jsonEncoder
-     * @param JwtStorage  $jwtStorage
+     * @param Client        $apiClient
+     * @param JsonEncoder   $jsonEncoder
+     * @param JwtStorage    $jwtStorage
+     * @param ApiDocStorage $apiDocStorage
      */
-    public function __construct(Client $apiClient, JsonEncoder $jsonEncoder, JwtStorage $jwtStorage)
-    {
+    public function __construct(
+        Client $apiClient,
+        JsonEncoder $jsonEncoder,
+        JwtStorage $jwtStorage,
+        ApiDocStorage $apiDocStorage
+    ) {
         $this->apiClient = $apiClient;
         $this->jsonEncoder = $jsonEncoder;
         $this->jwtStorage = $jwtStorage;
+        $this->apiDocStorage = $apiDocStorage;
+    }
+
+    /**
+     * @return array
+     */
+    public function doc(): array
+    {
+        /** @var ResponseInterface $response */
+        $response = $this->apiClient->doc();
+        $this->apiDocStorage->setApiDocAuthentication($response->getBody()->getContents());
+        $data = $this->jsonEncoder->decode($this->apiDocStorage->getApiDocAuthentication(), JsonEncoder::FORMAT);
+
+        return $data;
     }
 
     /**
@@ -66,7 +105,6 @@ class ClientHandler
      */
     public function login(array $data): array
     {
-
         /** @var ResponseInterface $response */
         $response = $this->apiClient->login($data);
         $data = $this->jsonEncoder->decode($response->getBody()->getContents(), JsonEncoder::FORMAT);
@@ -76,8 +114,42 @@ class ClientHandler
         return $data;
     }
 
-    public function logout()
+    /**
+     * @param string $resource
+     * @param array  $filters
+     *
+     * @return array
+     *
+     * @throws InvalidResourceEndpointException
+     */
+    public function list(string $resource, array $filters = []): array
     {
+        $data = [];
+
+        if (!in_array($resource, self::$resourceEntrypoints)) {
+            throw new InvalidResourceEndpointException();
+        }
+
+        try {
+
+            /** @var ResponseInterface $response */
+            $response = $this->apiClient->list(Inflector::pluralize($resource), $filters);
+            $data = $this->jsonEncoder->decode($response->getBody()->getContents(), JsonEncoder::FORMAT);
+
+        } catch (RequestException $e) {
+
+            if ($e->hasResponse() && in_array($e->getResponse()->getStatusCode(), self::$retryables)) {
+                try {
+                    $this->refresh();
+                } catch (RetryHttpException $e) {
+                    // log the retry ?
+                }
+
+                $data = $this->list($resource, $filters);
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -101,6 +173,8 @@ class ClientHandler
      */
     public function findUserByUsername(string $username): array
     {
+        $data = [];
+
         try {
 
             /** @var ResponseInterface $response */
@@ -109,14 +183,13 @@ class ClientHandler
 
         } catch (RequestException $e) {
 
-            $data = [];
-
             if ($e->hasResponse() && in_array($e->getResponse()->getStatusCode(), self::$retryables)) {
                 try {
                     $this->refresh();
                 } catch (RetryHttpException $e) {
-
+                    // log the retry ?
                 }
+
                 $data = $this->findUserByUsername($username);
             }
         }

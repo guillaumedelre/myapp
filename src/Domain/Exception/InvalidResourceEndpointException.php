@@ -6,11 +6,11 @@
  * Time: 08:08
  */
 
-namespace App\Domain\Http\Exception;
+namespace App\Domain\Exception;
 
 use GuzzleHttp\Exception\TransferException;
 
-class RetryHttpException extends TransferException
+class InvalidResourceEndpointException extends TransferException
 {
 
 }
